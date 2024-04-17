@@ -48,7 +48,8 @@ const compile = (input, helpers) => {
     _stackPushConst,
     _stackPush,
     _stackPop,
-    getActorIndex
+    getActorIndex,
+    getVariableAlias
   } = helpers
   
   const pushUnion = (union) => {
@@ -57,7 +58,7 @@ const compile = (input, helpers) => {
         _stackPushConst(union.value)
         break;
       case "variable":
-        _stackPush(union.value)
+        _stackPush(getVariableAlias(union.value))
         break;
       case "actor":
         _stackPushConst(

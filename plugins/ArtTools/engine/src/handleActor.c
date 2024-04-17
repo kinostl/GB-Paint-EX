@@ -1,9 +1,11 @@
+#include <asm/types.h>
 #include <stdint.h>
 #pragma bank 255
 
 #include "vm.h"
 #include <gb/gb.h>
 #include "data_manager.h"
+#include "load_save.h"
 
 union tile {
     uint8_t _tile;
@@ -17,13 +19,32 @@ union tile {
     } attr;
 };
 
+union tile_var {
+    UWORD _var;
+    struct {
+        UBYTE b0_tile;
+        UBYTE b1_tile;
+    } tiles;
+};
+
+union tile_vram {
+    UWORD _var;
+    struct {
+        uint8_t b0_tile;
+        uint8_t b1_tile;
+    } tiles;
+};
+
 void drawTile(SCRIPT_CTX * THIS) OLDCALL BANKED {
-    uint16_t col = (*(uint16_t *) VM_REF_TO_PTR(FN_ARG1));
-    uint16_t row =  (*(uint16_t *) VM_REF_TO_PTR(FN_ARG0));
+    uint16_t w_col = (*(uint16_t *) VM_REF_TO_PTR(FN_ARG3));
+    uint16_t w_row =  (*(uint16_t *) VM_REF_TO_PTR(FN_ARG2));
+    
+    uint16_t b_col = (*(uint16_t *) VM_REF_TO_PTR(FN_ARG1));
+    uint16_t b_row =  (*(uint16_t *) VM_REF_TO_PTR(FN_ARG0));
 
     vmemcpy(
-        get_win_xy_addr(col, row),
-            get_bkg_xy_addr(col, row),
+        get_win_xy_addr(w_col, w_row),
+            get_bkg_xy_addr(b_col, b_row),
             1
     );
 }
@@ -106,21 +127,79 @@ void rotateWinTile(SCRIPT_CTX * THIS) OLDCALL BANKED {
     VBK_REG = VBK_BANK_0;
 }
 
-//Sprite data found via trial and error
 void setTileStampB(SCRIPT_CTX * THIS) OLDCALL BANKED {
     uint16_t col = (*(uint16_t *) VM_REF_TO_PTR(FN_ARG1));
     uint16_t row =  (*(uint16_t *) VM_REF_TO_PTR(FN_ARG0));
     
-    uint8_t tileBuf[16];
-    get_bkg_data( get_bkg_tile_xy(col, row) , 1, tileBuf);
-    set_sprite_data(15, 1, tileBuf);
+    vmemcpy(
+        get_bkg_xy_addr(16, 16),
+            get_bkg_xy_addr(col, row),
+            1
+    );
 }
 
 void setTileStampA(SCRIPT_CTX * THIS) OLDCALL BANKED {
     uint16_t col = (*(uint16_t *) VM_REF_TO_PTR(FN_ARG1));
     uint16_t row =  (*(uint16_t *) VM_REF_TO_PTR(FN_ARG0));
     
-    uint8_t tileBuf[16];
-    get_bkg_data( get_bkg_tile_xy(col, row) , 1, tileBuf);
-    set_sprite_data(9, 1, tileBuf);
+    vmemcpy(
+        get_bkg_xy_addr(18, 16),
+            get_bkg_xy_addr(col, row),
+            1
+    );
+}
+
+void handleSaveVram(SCRIPT_CTX * THIS) OLDCALL BANKED {
+    uint8_t * win_tile_addr;
+    uint16_t col, row;
+    union tile_var win_tile;
+    data_save(2);
+    INT16 var_i = 0; //First unused variable
+    
+    for(col = 0; col < 20; col++){
+        for(row = 0; row < 20; row++){
+            VBK_REG = VBK_BANK_1;
+            win_tile_addr = get_win_xy_addr(col, row);
+            win_tile.tiles.b1_tile = get_vram_byte(win_tile_addr);
+            VBK_REG = VBK_BANK_0;
+            win_tile_addr = get_win_xy_addr(col, row);
+            win_tile.tiles.b0_tile = get_vram_byte(win_tile_addr);
+            
+            vm_set_const(THIS, var_i, win_tile._var);
+            var_i++;
+        }
+    }
+    
+    data_save(1);
+    
+    data_load(2);
+    data_clear(2);
+}
+
+void handleLoadVram(SCRIPT_CTX * THIS) OLDCALL BANKED {
+    uint8_t * win_tile_addr;
+    uint16_t col, row;
+    union tile_vram win_tile;
+    data_save(2);
+    data_load(1);
+    INT16 var_i = 0; //First unused variable
+    
+    for(col = 0; col < 20; col++){
+        for(row = 0; row < 20; row++){
+            win_tile._var = *(script_memory + var_i);
+            
+            VBK_REG = VBK_BANK_1;
+            win_tile_addr = get_win_xy_addr(col, row);
+            set_vram_byte(win_tile_addr, win_tile.tiles.b1_tile);
+            
+            VBK_REG = VBK_BANK_0;
+            win_tile_addr = get_win_xy_addr(col, row);
+            set_vram_byte(win_tile_addr, win_tile.tiles.b0_tile);
+            
+            var_i++;
+        }
+    }
+    
+    data_load(2);
+    data_clear(2);
 }

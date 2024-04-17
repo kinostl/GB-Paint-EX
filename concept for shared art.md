@@ -95,7 +95,7 @@ to be something like this
   }
 ```
 
-and then change `async go` out for this
+and then change `async go` out from this
 
 ```js
 (async function go() {
@@ -111,6 +111,27 @@ and then change `async go` out for this
 })();
 ```
 
+to this
+
+```js
+(async function go() {
+  let e_slice = await fetch('https://zonebooth.xyz/api/extram.php');
+  e_slice = await extram.json();
+  e_slice = extram['extram'];
+  
+  let extram = localStorage.getItem('extram')
+  extram = JSON.parse(extram)
+  extram.splice(8196, 8842, ...e_slice)
+  
+  localStorage.setItem('extram', JSON.stringify(extram));
+  
+  let response = await fetch(ROM_FILENAME);
+  let romBuffer = await response.arrayBuffer();
+  const extRam = new Uint8Array(JSON.parse(localStorage.getItem("extram")));
+  Emulator.start(await binjgbPromise, romBuffer, extRam);
+  emulator.setBuiltinPalette(vm.palIdx);
+})();
+```
 
 API Stuff 
 
@@ -127,6 +148,6 @@ API Stuff
         },
         redirect: "follow", // manual, *follow, error
         referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-        body: extram, // body data type must match "Content-Type" header
+        body: e_slice, // body data type must match "Content-Type" header
       })
 ```

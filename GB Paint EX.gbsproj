@@ -4470,6 +4470,13 @@
                     "id": "21aa7b25-0ab0-4729-a366-795754c5f621"
                 },
                 {
+                    "command": "EVENT_GBVM_SCRIPT",
+                    "args": {
+                        "script": "VM_OVERLAY_CLEAR 0, 0, 20, 18, .UI_COLOR_WHITE, 0"
+                    },
+                    "id": "9fe8fba4-feb5-442c-8bca-e3c09daff30c"
+                },
+                {
                     "command": "MY_EVENT_CALL_NATIVE",
                     "args": {
                         "argCount": 0,
@@ -4724,7 +4731,7 @@
             "default-bg-5",
             "default-bg-6",
             "dmg",
-            "default-ui"
+            "default-bg-1"
         ],
         "defaultSpritePaletteIds": [
             "default-bg-1",

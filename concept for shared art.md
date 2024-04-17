@@ -37,3 +37,96 @@ not as helpful as expected ... just gave the debug style vram output
 btoa the extram won't work either thats a lot of text, too long for a comment. Also, the extram is just incomprehensible.
 
 extram will work because I made an api for it on my server.
+
+extram saves the image to extram 8192 ... 8192+360
+
+20 * 18 = 360
+
+Unsure why a block randomly gets placed into things but shrug
+
+Well, 19 * 17 now. 
+
+19 * 17 = 323
+
+grab 8192 to 360 just to be safe? Its a clean number that way.
+368 cause int16s 
+
+323 + 4 = 327
+
+Image starts on 4? Maybe 5 and ends on 648
+
+I do not know how mathematics works.
+
+Definitely starts at 4. I think these are 8 bit numbers being stored funny.
+
+Yeah confirmed I'm striping bank 0 bank 1 bank 0 as 8 bit numbers.
+
+`(19*17*2)+4 = 650`
+
+So we want 4 to 650? Yup, 648 has 1,0.
+
+
+so the updateExtRam mod should check to see if 8192+4 ... 8192+650 has changed.
+
+in script.js of the export edit this
+
+```js
+  updateExtRam() {
+    if (!emulator) return;
+    const extram = emulator.getExtRam();
+    localStorage.setItem("extram", JSON.stringify(Array.from(extram)));
+  }
+```
+
+to be something like this
+
+```js
+  updateExtRam() {
+    if (!emulator) return;
+    const extram = emulator.getExtRam();
+    localStorage.setItem("extram", JSON.stringify(Array.from(extram)));
+    
+    const e_slice = JSON.stringify(extram.slice(8196, 8842));
+    const le_slice = localStorage.getItem("le_slice");
+    if(e_slice != le_slice){
+      localStorage.setItem("e_slice", e_slice);
+      //api stuff here
+    }
+  }
+```
+
+and then change `async go` out for this
+
+```js
+(async function go() {
+  let extram = await fetch('https://zonebooth.xyz/api/extram.php');
+  extram = await extram.json();
+  extram = extram['extram'];
+  localStorage.setItem('extram', JSON.stringify(extram));
+  let response = await fetch(ROM_FILENAME);
+  let romBuffer = await response.arrayBuffer();
+  const extRam = new Uint8Array(JSON.parse(localStorage.getItem("extram")));
+  Emulator.start(await binjgbPromise, romBuffer, extRam);
+  emulator.setBuiltinPalette(vm.palIdx);
+})();
+```
+
+
+API Stuff 
+
+```js
+      localStorage.setItem("extram", extram);
+      fetch('https://zonebooth.xyz/api/extram.php', {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, *cors, same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "omit", // include, *same-origin, omit
+        headers: {
+          "Content-Type": "application/json",
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: "follow", // manual, *follow, error
+        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        body: extram, // body data type must match "Content-Type" header
+      })
+```

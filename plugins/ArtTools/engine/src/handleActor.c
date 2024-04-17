@@ -156,8 +156,8 @@ void handleSaveVram(SCRIPT_CTX * THIS) OLDCALL BANKED {
     data_save(2);
     INT16 var_i = 0; //First unused variable
     
-    for(col = 0; col < 20; col++){
-        for(row = 0; row < 20; row++){
+    for(col = 1; col < 20; col++){
+        for(row = 0; row < 17; row++){
             VBK_REG = VBK_BANK_1;
             win_tile_addr = get_win_xy_addr(col, row);
             win_tile.tiles.b1_tile = get_vram_byte(win_tile_addr);
@@ -184,8 +184,8 @@ void handleLoadVram(SCRIPT_CTX * THIS) OLDCALL BANKED {
     data_load(1);
     INT16 var_i = 0; //First unused variable
     
-    for(col = 0; col < 20; col++){
-        for(row = 0; row < 20; row++){
+    for(col = 1; col < 20; col++){
+        for(row = 0; row < 17; row++){
             win_tile._var = *(script_memory + var_i);
             
             VBK_REG = VBK_BANK_1;

@@ -154,7 +154,13 @@ void handleSaveVram(SCRIPT_CTX * THIS) OLDCALL BANKED {
     uint16_t col, row;
     union tile_var win_tile;
     data_save(2);
-    INT16 var_i = 0; //First unused variable
+    
+    INT16 var_i = 0;
+    vm_set_const(THIS, var_i++, 'p');
+    vm_set_const(THIS, var_i++, 'a');
+    vm_set_const(THIS, var_i++, 'i');
+    vm_set_const(THIS, var_i++, 'n');
+    vm_set_const(THIS, var_i++, 't');
     
     for(col = 1; col < 20; col++){
         for(row = 0; row < 17; row++){
@@ -170,19 +176,25 @@ void handleSaveVram(SCRIPT_CTX * THIS) OLDCALL BANKED {
         }
     }
     
-    data_save(1);
+    vm_set_const(THIS, var_i++, 'b');
+    vm_set_const(THIS, var_i++, 'r');
+    vm_set_const(THIS, var_i++, 'u');
+    vm_set_const(THIS, var_i++, 's');
+    vm_set_const(THIS, var_i++, 'h');
     
+    data_save(1);
     data_load(2);
-    data_clear(2);
+    
 }
 
 void handleLoadVram(SCRIPT_CTX * THIS) OLDCALL BANKED {
+    THIS;
     uint8_t * win_tile_addr;
     uint16_t col, row;
     union tile_vram win_tile;
     data_save(2);
     data_load(1);
-    INT16 var_i = 0; //First unused variable
+    INT16 var_i = 5; //First unused variable
     
     for(col = 1; col < 20; col++){
         for(row = 0; row < 17; row++){
@@ -201,5 +213,4 @@ void handleLoadVram(SCRIPT_CTX * THIS) OLDCALL BANKED {
     }
     
     data_load(2);
-    data_clear(2);
 }

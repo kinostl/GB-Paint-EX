@@ -130,27 +130,38 @@ class VM {
 
   updateExtRam() {
     if (!emulator) return;
-    const extram = emulator.getExtRam();
-    localStorage.setItem("extram", JSON.stringify(Array.from(extram)));
+    const extram = Array.from(emulator.getExtRam());
     
-    const e_slice = JSON.stringify(extram.slice(8196, 8842));
-    const le_slice = localStorage.getItem("le_slice");
-    if(e_slice != le_slice){
-      localStorage.setItem("e_slice", e_slice);
-      fetch('https://zonebooth.xyz/api/extram.php', {
-        method: "POST", // *GET, POST, PUT, DELETE, etc.
-        mode: "cors", // no-cors, *cors, same-origin
-        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: "omit", // include, *same-origin, omit
-        headers: {
-          "Content-Type": "application/json",
-          // 'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        redirect: "follow", // manual, *follow, error
-        referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-        body: e_slice, // body data type must match "Content-Type" header
-      })
-    }
+    let e_slice = extram.slice(8196, 8862);
+    let e_string = JSON.stringify(extram);
+    
+    localStorage.setItem("extram", e_string);
+    
+    if(e_slice[0] != 112) return;
+    if(e_slice[2] != 97) return;
+    if(e_slice[4] != 105) return;
+    if(e_slice[6] != 110) return;
+    if(e_slice[8] != 116) return;
+    
+    console.log("saving to api");
+    
+    let saved_slice = localStorage.getItem("e_slice");
+    if(e_slice == saved_slice) return;
+    e_slice = JSON.stringify(e_slice);
+    localStorage.setItem("e_slice", e_slice);
+    fetch('https://zonebooth.xyz/api/extram.php', {
+      method: "POST", // *GET, POST, PUT, DELETE, etc.
+      mode: "cors", // no-cors, *cors, same-origin
+      cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+      credentials: "omit", // include, *same-origin, omit
+      headers: {
+        "Content-Type": "application/json",
+        // 'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      redirect: "follow", // manual, *follow, error
+      referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+      body: e_string, // body data type must match "Content-Type" header
+    })
   }
 }
 
@@ -158,20 +169,17 @@ const vm = new VM();
 
 // Update extram and Load a ROM.
 (async function go() {
+  console.log("downloading ram")
   let e_slice = await fetch('https://zonebooth.xyz/api/extram.php');
-  e_slice = await extram.json();
-  e_slice = extram['extram'];
-  
-  let extram = localStorage.getItem('extram')
-  extram = JSON.parse(extram)
-  extram.splice(8196, 8842, ...e_slice)
-  
-  localStorage.setItem('extram', JSON.stringify(extram));
+  e_slice = await e_slice.json();
+  const extram = e_slice['extram'];
   
   let response = await fetch(ROM_FILENAME);
   let romBuffer = await response.arrayBuffer();
-  const extRam = new Uint8Array(JSON.parse(localStorage.getItem("extram")));
-  Emulator.start(await binjgbPromise, romBuffer, extRam);
+  const extRamBuffer = new Uint8Array(extram);
+  console.log("extRamBuffer loaded")
+  console.log(extRamBuffer)
+  Emulator.start(await binjgbPromise, romBuffer, extRamBuffer);
   emulator.setBuiltinPalette(vm.palIdx);
 })();
 

@@ -4460,6 +4460,54 @@
                     "id": "6a9efdee-69cd-4342-942b-a27ef1eec80f"
                 },
                 {
+                    "command": "EVENT_WAIT",
+                    "args": {
+                        "time": 0.5,
+                        "frames": 30
+                    },
+                    "id": "8e881c08-0463-46d8-8eba-428c01d2256e"
+                },
+                {
+                    "command": "MY_EVENT_CALL_NATIVE",
+                    "args": {
+                        "argCount": 0,
+                        "arg0": {
+                            "type": "number",
+                            "value": 0
+                        },
+                        "arg1": {
+                            "type": "number",
+                            "value": 0
+                        },
+                        "arg2": {
+                            "type": "number",
+                            "value": 0
+                        },
+                        "arg3": {
+                            "type": "number",
+                            "value": 0
+                        },
+                        "arg4": {
+                            "type": "number",
+                            "value": 0
+                        },
+                        "arg5": {
+                            "type": "number",
+                            "value": 0
+                        },
+                        "arg6": {
+                            "type": "number",
+                            "value": 0
+                        },
+                        "arg7": {
+                            "type": "number",
+                            "value": 0
+                        },
+                        "funName": "handleLockImage"
+                    },
+                    "id": "aefed676-2a94-4c60-9c35-07198c396b30"
+                },
+                {
                     "command": "EVENT_TEXT",
                     "args": {
                         "text": [
@@ -4512,7 +4560,8 @@
                             "type": "number",
                             "value": 0
                         },
-                        "funName": "handleLoadVram"
+                        "funName": "handleLoadVram",
+                        "__collapse": false
                     },
                     "id": "291e625e-a6d6-4583-a301-a001e3b9d7ed"
                 }

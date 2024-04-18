@@ -514,26 +514,6 @@
             ],
             "script": [
                 {
-                    "command": "EVENT_OVERLAY_SHOW",
-                    "args": {
-                        "color": "white",
-                        "x": 0,
-                        "y": 0,
-                        "__collapse": true
-                    },
-                    "id": "51a89821-36a4-4414-a96f-b7c485f02236"
-                },
-                {
-                    "command": "EVENT_OVERLAY_MOVE_TO",
-                    "args": {
-                        "x": 0,
-                        "y": 18,
-                        "speed": "0",
-                        "__collapse": true
-                    },
-                    "id": "46bd4c84-989c-4999-ac26-302657193842"
-                },
-                {
                     "command": "MY_EVENT_CALL_NATIVE",
                     "args": {
                         "argCount": 2,
@@ -669,7 +649,8 @@
                             "type": "number",
                             "value": 0
                         },
-                        "funName": "handleLoadVram"
+                        "funName": "handleLoadVram",
+                        "__collapse": true
                     },
                     "id": "e8f5af29-66a1-49d0-a4e2-4829f8fdc601"
                 },
@@ -4458,54 +4439,6 @@
                         "funName": "handleSaveVram"
                     },
                     "id": "6a9efdee-69cd-4342-942b-a27ef1eec80f"
-                },
-                {
-                    "command": "EVENT_WAIT",
-                    "args": {
-                        "time": 0.5,
-                        "frames": 30
-                    },
-                    "id": "8e881c08-0463-46d8-8eba-428c01d2256e"
-                },
-                {
-                    "command": "MY_EVENT_CALL_NATIVE",
-                    "args": {
-                        "argCount": 0,
-                        "arg0": {
-                            "type": "number",
-                            "value": 0
-                        },
-                        "arg1": {
-                            "type": "number",
-                            "value": 0
-                        },
-                        "arg2": {
-                            "type": "number",
-                            "value": 0
-                        },
-                        "arg3": {
-                            "type": "number",
-                            "value": 0
-                        },
-                        "arg4": {
-                            "type": "number",
-                            "value": 0
-                        },
-                        "arg5": {
-                            "type": "number",
-                            "value": 0
-                        },
-                        "arg6": {
-                            "type": "number",
-                            "value": 0
-                        },
-                        "arg7": {
-                            "type": "number",
-                            "value": 0
-                        },
-                        "funName": "handleLockImage"
-                    },
-                    "id": "aefed676-2a94-4c60-9c35-07198c396b30"
                 },
                 {
                     "command": "EVENT_TEXT",
